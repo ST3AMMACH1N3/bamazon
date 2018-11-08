@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# sql seed files
+departments-seed.sql
+products-seed.sql
