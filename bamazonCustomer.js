@@ -61,7 +61,7 @@ function createTransaction() {
 function checkValidTransaction(id, num) {
     connection.query('SELECT stock_quantity FROM `products` WHERE ?', {item_id: id}, (err, res) => {
         if (err) throw err;
-        if (num < res[0].stock_quantity) {
+        if (num <= res[0].stock_quantity) {
             completeTransaction(id, res[0].stock_quantity, num);
         } else {
             console.log("Insufficient quantity!");
