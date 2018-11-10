@@ -71,7 +71,7 @@ function checkValidTransaction(id, num) {
 }
 
 function completeTransaction(id, stock, num) {
-    connection.query('UPDATE `products` SET `stock_quantity` = ? WHERE ?', [stock - num, {item_id: id}], err => {
+    connection.query('UPDATE `products` SET ? WHERE ?', [{stock_quantity: stock - num}, {item_id: id}], err => {
         if (err) throw err;
         connection.query('SELECT price FROM `products` WHERE ?', {item_id: id}, (err, res) => {
             if (err) throw err;
