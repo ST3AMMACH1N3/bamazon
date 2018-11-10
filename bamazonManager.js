@@ -40,4 +40,11 @@ function mainMenu() {
     });
 }
 
+function viewProducts() {
+    connection.query("SELECT item_id, product_name, price, stock_quantity FROM `products`", (err, res) => {
+        if (err) throw err;
+        console.table(res);
+    });
+}
+
 mainMenu();
