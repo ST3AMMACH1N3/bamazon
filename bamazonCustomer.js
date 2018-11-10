@@ -54,29 +54,27 @@ function createTransaction() {
             }
         }
     ]).then(response => {
-        checkValidTransaction(parseInt(response.id), parseInt(response.number));
+        completeTransaction(parseInt(response.id), parseInt(response.number));
     });
 }
 
-function checkValidTransaction(id, num) {
-    connection.query('SELECT stock_quantity FROM `products` WHERE ?', {item_id: id}, (err, res) => {
+function completeTransaction(id, num) {
+    connection.query('SELECT stock_quantity, units_sold FROM `products` WHERE ?', {item_id: id}, (err, res) => {
         if (err) throw err;
-        if (num <= res[0].stock_quantity) {
-            completeTransaction(id, res[0].stock_quantity, num);
-        } else {
+        let stock = res[0].stock_quantity;
+        let sold = res[0].units_sold;
+        if (num > stock) {
             console.log("Insufficient quantity!");
             createTransaction();
+            return;
         }
-    });
-}
-
-function completeTransaction(id, stock, num) {
-    connection.query('UPDATE `products` SET ? WHERE ?', [{stock_quantity: stock - num}, {item_id: id}], err => {
-        if (err) throw err;
-        connection.query('SELECT price FROM `products` WHERE ?', {item_id: id}, (err, res) => {
+        connection.query('UPDATE `products` SET ? WHERE ?', [{stock_quantity: stock - num, units_sold: sold + num}, {item_id: id}], err => {
             if (err) throw err;
-            console.log (`Your total is $${num * res[0].price}`);
-            connection.end();
+            connection.query('SELECT price FROM `products` WHERE ?', {item_id: id}, (err, res) => {
+                if (err) throw err;
+                console.log (`Your total is $${(num * res[0].price).toFixed(2)}`);
+                connection.end();
+            });
         });
     });
 }
