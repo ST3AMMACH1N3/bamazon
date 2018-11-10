@@ -98,4 +98,61 @@ function addInventory() {
     });
 }
 
+
+function addProduct() {
+    inquirer.prompt([
+        {
+            name: "name",
+            type: "input",
+            message: "Enter the name of the product",
+            validate: function(input) {
+                if (input.length > 0) {
+                    return true;
+                }
+                return "Please enter a valid name";
+            }
+        },
+        {
+            name: "department",
+            type: "input",
+            message: "Enter the department the product is in",
+            validate: function(input) {
+                if (input.length > 0) {
+                    return true;
+                }
+                return "Please enter a valid name";
+            }
+        },
+        {
+            name: "price",
+            type: "input",
+            message: "Enter the price of the product",
+            validate: function(input) {
+                if (parseFloat(input) >= 0) {
+                    return true;
+                }
+                return "Please enter a valid price"
+            }
+        },
+        {
+            name: "stock",
+            type: "input",
+            message: "Enter the number of the product you have in-stock",
+            validate: function(input) {
+                if (parseInt(input) >= 0) {
+                    return true;
+                }
+                return "Please enter a valid number"
+            }
+
+        }
+    ]).then(response => {
+        connection.query('INSERT INTO `products` SET ?', {product_name: response.name, department_name: response.department, price: parseFloat(response.price), stock_quantity: parseInt(response.stock)}, err => {
+            if (err) throw err;
+            console.log("Item added successfully!");
+            mainMenu();
+        });
+    })
+}
+
 mainMenu();
